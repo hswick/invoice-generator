@@ -1,61 +1,70 @@
 # invoice-generator
 
-guile script used for generating invoices in pdf format. input to the script is lisp code.
+Ruby script used for generating invoices in pdf format. Input to the script is json data.
 
 # Install
 
 ```bash
-apt install guile wkhtmltopdf
+apt install ruby wkhtmltopdf
 ```
 
 # Usage
 
-Create `personal.scm` like this, it can be reused for other invoices:
-```
-(define personal
-  '(("name" . "Shiba Inu")
-    ("address1" . "420 Shibenobi Rd")
-    ("address2" . "Dark Side, Moon 55555")
-    ("phone" . "555-555-5555")
-    ("bank-name" . "Chase")
-    ("routing-number" . "3467543")
-    ("account-number" . "123456789")))    
-```
-
-Make a directory example: `data`.
-
+Make a directory called `data`, we will put our json files there.
+Then create the json files:
 ```bash
 mkdir data
-touch data/client.scm
-touch data/invoice.scm
+touch data/personal.json
+touch data/client.json
+touch data/invoice.json
 ```
 
-Then fill client in like this:
-
+Create `personal.json` like this, it can be reused for other invoices:
+```javascript
+{
+    "name": "Foo Bar",
+    "address1": "420 East Foo Street",
+    "address2": "Dark Side, MN 43215",
+    "phone": "123-321-1234",
+    "routing-number": "123456789",
+    "account-number": "123456789"
+}
 ```
-(define client
-  '(("client-name" . "Annoying Client")
-    ("client-address1" . "420 Cherry Dr, San Francisco")
-    ("client-address2" . "CA 55555")))
+
+`client.json` like this:
+```javascript
+{
+    "name": "Company Name",
+    "address1": "Foobar Dr, Chicago",
+    "address2": "IL 54034"
+}
 ```
 
-Last but not least, fill in invoice like this:
-```
-(define (item date amount)
-  (cons date amount))
-
-(define items
-  (list (item "January 1-15 2019" 1500.00)))
-
-(define invoice-meta-data
-  '(("invoice-number" . "1")
-    ("current-date" . "1/16/2019")))
+Lastly `invoice.json` like this:
+```javascript
+{
+    "number": 1,
+    "date": "4/20/20",
+    "items": [
+	{
+	    "date": "4/18/20",
+	    "info": "Stuff"
+	    "hours": 2
+	},
+	{
+	    "date": "4/19/20",
+	    "info": "stuff"
+	    "hours": 4
+	},
+	...
+    ]
+}
 ```
 
 Now we can cleanly run the script:
 
 ```bash
-guile -s invoice-generator.scm
+ruby invoice_generator.rb
 ```
 
 You should see a file named `output.pdf` now.
